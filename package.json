@@ -1,0 +1,25 @@
+{
+  "name": "hashtags-generator",
+  "version": "1.0.0",
+  "description": "Hashtags Generator allows to generate a randomized string of hashtags",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/parmeet1402/hashtags-generator.git"
+  },
+  "keywords": [
+    "hashtags"
+  ],
+  "author": "Parmeet Singh",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/parmeet1402/hashtags-generator/issues"
+  },
+  "homepage": "https://github.com/parmeet1402/hashtags-generator#readme",
+  "dependencies": {
+    "clipboardy": "^2.3.0"
+  }
+}
