@@ -1,10 +1,6 @@
 const fs = require("fs");
 const clipboardy = require("clipboardy");
 
-// TODO: Load hashtags
-// 1. Access JSON file and load up the all hashtags variable
-// 2. If file not found, prompt to generate a new one
-
 let allHashtags = {};
 
 const calculateShares = (str, total) => {
@@ -30,20 +26,46 @@ const getRandomHashtagsByPopularity = (popularity, count) => {
   return shuffle(allHashtags[popularity]).slice(0, count);
 };
 
-function shuffle(o) {
+function shuffle(arr) {
   for (
-    var j, x, i = o.length;
+    var j, x, i = arr.length;
     i;
-    j = parseInt(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x
+    j = parseInt(Math.random() * i), x = arr[--i], arr[i] = arr[j], arr[j] = x
   );
-  return o;
+  return arr;
 }
 
-// TODO: Add hashtag
-// 1. First check whether it has only one # along with string and no special characters
-// 2. Check if the hashtag is present in any of the array, all can be joined and then searched upon
-// 3A. If found, throw error
-// 3B. If not found, insert it up into the allHashtags array and then also add it to the JSON file
+const addHashtag = (str, popularity) => {
+  // validate popularity
+  if (
+    !popularity ||
+    (popularity && !["high", "medium", "low"].includes(popularity))
+  ) {
+    throw new Error("Invalid Popularity value");
+  }
+
+  // validation check
+  if (!str || !/(?:\s|^)#[A-Za-z0-9\-\.\_]+(?:\s|$)/g.test(str)) {
+    throw new Error("Hashtag is not in correct format");
+  }
+
+  // already exists check
+  if (
+    Object.values(allHashtags)
+      .reduce((acc, currentItem) => [...acc, ...currentItem], [])
+      .includes(str)
+  ) {
+    throw new Error("Hashtag already exists");
+  }
+
+  // add it to the current variable in memory & the json file
+  allHashtags[popularity].push(str);
+
+  fs.writeFile("data.json", JSON.stringify(allHashtags), function (err) {
+    if (err) throw err;
+    console.log("Replaced!");
+  });
+};
 
 const generateHashtags = (length = 30, platform, popularityRatio) => {
   const [highCount, mediumCount, lowCount] = calculateShares(
@@ -51,13 +73,13 @@ const generateHashtags = (length = 30, platform, popularityRatio) => {
     length
   );
 
-  clipboardy.writeSync(
+  /*  clipboardy.writeSync(
     [
       ...getRandomHashtagsByPopularity("high", highCount),
       ...getRandomHashtagsByPopularity("medium", mediumCount),
       getRandomHashtagsByPopularity("low", lowCount),
-    ].join(", ")
-  );
+    ].join(" ")
+  ); */
 
   console.log("Copied!");
 
@@ -65,38 +87,26 @@ const generateHashtags = (length = 30, platform, popularityRatio) => {
     ...getRandomHashtagsByPopularity("high", highCount),
     ...getRandomHashtagsByPopularity("medium", mediumCount),
     getRandomHashtagsByPopularity("low", lowCount),
-  ].join(", ");
+  ].join(" ");
 };
 
 //  3-4 frequent, 6-8 average and 12-16 rare
 const init = () => {
   let rawdata = fs.readFileSync("data.json");
   allHashtags = JSON.parse(rawdata);
-  // console.log(window);
 };
 
-function pbcopy(data) {
-  var proc = require("child_process").spawn("pbcopy");
-  proc.stdin.write(data);
-  proc.stdin.end();
-}
-
 init();
-// TODO: Add it to clipboard for easier usage
-console.log(generateHashtags(30, "instagram", "1:1:1"));
-/* 
 
-1000
-#developer_work #developerSetup #reactjsDeveloper #appleDeveloper #flutterDeveloper #gameDeveloper #developersInMumbai #nodejsDeveloper #reactnativeDevelopers #softwareDevelopers #googleDevelopers #developerDiaries #developerStuff #developerStuff #javascriptDeveloper #mobileDeveloper #codingPics #codeIsMyLife #nanodegree #vuejs #cloudDeveloper  #cloudsolutions #serverless
+console.log("WELCOME TO HASHTAG MANAGER");
 
+// while (true) {
+// console.log("---X---- Select an option----X---");
+// console.log("1. Generate hashtags");
+// console.log("2. Add new hashtag");
 
-100000
-#webDeveloper #appDeveloper #websiteDeveloper #iosDeveloper #backendDeveloper #frontendDeveloper  #coders #worldCode  #coderLife #reactjs #learnToCode #aws  #devops #codingIsFun
-
-1000000
-#code #coder #programmer #developer #javascript #programming#macbook #coding #codingLife #
-
-
-#bootstrap #code #programmers #python #html #css #course #webapp #webdeveloper #frontend #backend #webdev #webdesigner #learntocode #onlinecourse #peoplewhocode
-
-*/
+/* switch (choice) {
+    case "1":
+    case "2":
+  } */
+// }
