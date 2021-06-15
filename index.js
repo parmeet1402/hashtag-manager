@@ -1,5 +1,6 @@
 const fs = require("fs");
 const clipboardy = require("clipboardy");
+const prompt = require("prompt-sync")({ sigint: true });
 
 let allHashtags = {};
 
@@ -59,27 +60,37 @@ const addHashtag = (str, popularity) => {
   }
 
   // add it to the current variable in memory & the json file
-  allHashtags[popularity].push(str);
-
+  if (allHashtags.popularity) {
+    allHashtags[popularity].push(str);
+  } else {
+    allHashtags[popularity] = [str];
+  }
   fs.writeFile("data.json", JSON.stringify(allHashtags), function (err) {
     if (err) throw err;
-    console.log("Replaced!");
+    console.log("Added!");
   });
 };
 
-const generateHashtags = (length = 30, platform, popularityRatio) => {
+const generateHashtags = (length = 30, popularityRatio) => {
+  if (Object.keys(allHashtags).length === 0) {
+    console.warn(
+      "Please add hashtags before you could start generating them up"
+    );
+    return;
+  }
+
   const [highCount, mediumCount, lowCount] = calculateShares(
     popularityRatio,
     length
   );
 
-  /*  clipboardy.writeSync(
+  clipboardy.writeSync(
     [
       ...getRandomHashtagsByPopularity("high", highCount),
       ...getRandomHashtagsByPopularity("medium", mediumCount),
       getRandomHashtagsByPopularity("low", lowCount),
     ].join(" ")
-  ); */
+  );
 
   console.log("Copied!");
 
@@ -93,20 +104,56 @@ const generateHashtags = (length = 30, platform, popularityRatio) => {
 //  3-4 frequent, 6-8 average and 12-16 rare
 const init = () => {
   let rawdata = fs.readFileSync("data.json");
+  console.log(JSON.parse(rawdata));
   allHashtags = JSON.parse(rawdata);
 };
 
 init();
 
-console.log("WELCOME TO HASHTAG MANAGER");
+console.log(`WELCOME TO HASHTAG MANAGER`);
+console.log(`---X---- Select an option ----X--- 
+1. Generate Hashtags
+2. Add new Hashtag
+3. View all hashtags
+4. Reset Hashtags
+`);
 
-// while (true) {
-// console.log("---X---- Select an option----X---");
-// console.log("1. Generate hashtags");
-// console.log("2. Add new hashtag");
+const choice = prompt();
+switch (choice) {
+  case "1":
+    const length =
+      prompt("What should be the length of hashtags? (Default: 30)") || 30;
+    const popularityRatio =
+      prompt("What popularity ratio should hashtags be in? (Default: 1:1:1)") ||
+      "1:1:1";
+    generateHashtags(+length, popularityRatio);
+    break;
+  case "2":
+    let str = "",
+      popularityLevel = "";
+    str = prompt("What would be hashtag name? ()");
+    while (!str) {
+      console.log("Hashtag name would be required...");
+      str = prompt("What would be hashtag name? ()");
+    }
 
-/* switch (choice) {
-    case "1":
-    case "2":
-  } */
-// }
+    popularityLevel = prompt("What is the popularity level of hashtag?");
+    while (!popularityLevel) {
+      console.log("Popularity  Level would be required");
+      popularityLevel = prompt("What is the popularity level of hashtag?");
+    }
+
+    if (str) addHashtag(str, popularityLevel);
+    break;
+  case "3":
+    console.log(allHashtags);
+    break;
+  case "4":
+    fs.writeFile("data.json", JSON.stringify({}), function (err) {
+      if (err) throw err;
+      console.log("Deleted!");
+    });
+    break;
+  default:
+    break;
+}

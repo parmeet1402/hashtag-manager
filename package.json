@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/parmeet1402/hashtags-generator#readme",
   "dependencies": {
-    "clipboardy": "^2.3.0"
+    "clipboardy": "^2.3.0",
+    "prompt-sync": "^4.2.0"
   }
 }
