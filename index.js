@@ -65,6 +65,19 @@ const addHashtag = (str, popularity) => {
   } else {
     allHashtags[popularity] = [str];
   }
+
+  // if hashtag file isn't created then create it out
+  if (Object.keys(allHashtags).length === 0) {
+    allHashtags = { high: [], medium: [], low: [] };
+    fs.writeFile(
+      "data.json",
+      JSON.stringify({ high: [], medium: [], low: [] }),
+      function (err) {
+        if (err) throw err;
+      }
+    );
+  }
+
   fs.writeFile("data.json", JSON.stringify(allHashtags), function (err) {
     if (err) throw err;
     console.log("Added!");
@@ -103,9 +116,9 @@ const generateHashtags = (length = 30, popularityRatio) => {
 
 //  3-4 frequent, 6-8 average and 12-16 rare
 const init = () => {
-  let rawdata = fs.readFileSync("data.json");
-  console.log(JSON.parse(rawdata));
-  allHashtags = JSON.parse(rawdata);
+  let rawData = fs.readFileSync("data.json");
+  console.log(JSON.parse(rawData));
+  allHashtags = JSON.parse(rawData);
 };
 
 init();
@@ -116,31 +129,29 @@ console.log(`---X---- Select an option ----X---
 2. Add new Hashtag
 3. View all hashtags
 4. Reset Hashtags
-`);
+5. Exit`);
 
-const choice = prompt();
+const choice = prompt("Please select an option: ");
 switch (choice) {
   case "1":
-    const length =
-      prompt("What should be the length of hashtags? (Default: 30)") || 30;
+    const length = prompt("Number of Hashtags: (30)") || 30;
     const popularityRatio =
-      prompt("What popularity ratio should hashtags be in? (Default: 1:1:1)") ||
-      "1:1:1";
+      prompt("Popularity Ratio: <High:Medium:Low> (1:1:1)") || "1:1:1";
     generateHashtags(+length, popularityRatio);
     break;
   case "2":
     let str = "",
       popularityLevel = "";
-    str = prompt("What would be hashtag name? ()");
+    str = prompt("Name:");
     while (!str) {
-      console.log("Hashtag name would be required...");
-      str = prompt("What would be hashtag name? ()");
+      console.log("Hashtag name is required");
+      str = prompt("Name:");
     }
 
-    popularityLevel = prompt("What is the popularity level of hashtag?");
+    popularityLevel = prompt("Hashtag's Popularity: <High:Medium:Low>");
     while (!popularityLevel) {
-      console.log("Popularity  Level would be required");
-      popularityLevel = prompt("What is the popularity level of hashtag?");
+      console.log("Hashtag's Popularity is required");
+      popularityLevel = prompt("Hashtag's Popularity: <High:Medium:Low>");
     }
 
     if (str) addHashtag(str, popularityLevel);
@@ -149,11 +160,18 @@ switch (choice) {
     console.log(allHashtags);
     break;
   case "4":
-    fs.writeFile("data.json", JSON.stringify({}), function (err) {
-      if (err) throw err;
-      console.log("Deleted!");
-    });
+    fs.writeFile(
+      "data.json",
+      JSON.stringify({ high: [], medium: [], low: [] }),
+      function (err) {
+        if (err) throw err;
+        console.log("Deleted!");
+      }
+    );
+    break;
+  case "5":
+    process.exit(0);
     break;
   default:
-    break;
+    console.log("Please select the correct option");
 }
