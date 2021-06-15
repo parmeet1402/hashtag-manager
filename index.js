@@ -1,7 +1,7 @@
 const fs = require("fs");
 const clipboardy = require("clipboardy");
 const prompt = require("prompt-sync")({ sigint: true });
-
+const constants = require("./constants");
 let allHashtags = {};
 
 const calculateShares = (str, total) => {
@@ -123,38 +123,33 @@ const init = () => {
 
 init();
 
-console.log(`WELCOME TO HASHTAG MANAGER`);
-console.log(`---X---- Select an option ----X--- 
-1. Generate Hashtags
-2. Add new Hashtag
-3. View all hashtags
-4. Reset Hashtags
-5. Exit`);
+console.log(constants.STMT_WELCOME_MESSAGE);
+console.log(constants.STMT_MAIN_MENU_OPTIONS);
 
-const choice = prompt("Please select an option: ");
+const choice = prompt(constants.STMT_SELECT_OPTION);
 switch (choice) {
   case "1":
-    const length = prompt("Number of Hashtags: (30)") || 30;
+    const length = prompt("Number of Hashtags: (30) ") || 30;
     const popularityRatio =
-      prompt("Popularity Ratio: <High:Medium:Low> (1:1:1)") || "1:1:1";
+      prompt("Popularity Ratio: <High:Medium:Low> (1:1:1) ") || "1:1:1";
     generateHashtags(+length, popularityRatio);
     break;
   case "2":
     let str = "",
       popularityLevel = "";
-    str = prompt("Name:");
+    str = prompt("Name: ");
     while (!str) {
       console.log("Hashtag name is required");
-      str = prompt("Name:");
+      str = prompt("Name: ");
     }
 
-    popularityLevel = prompt("Hashtag's Popularity: <High:Medium:Low>");
+    popularityLevel = prompt("Hashtag's Popularity: <High:Medium:Low> ");
     while (!popularityLevel) {
       console.log("Hashtag's Popularity is required");
-      popularityLevel = prompt("Hashtag's Popularity: <High:Medium:Low>");
+      popularityLevel = prompt("Hashtag's Popularity: <High:Medium:Low> ");
     }
 
-    if (str) addHashtag(str, popularityLevel);
+    if (str) addHashtag(str.toLowerCase(), popularityLevel.toLowerCase());
     break;
   case "3":
     console.log(allHashtags);
@@ -175,3 +170,20 @@ switch (choice) {
   default:
     console.log("Please select the correct option");
 }
+
+// Constants
+const POPULARITY_LEVEL = ["high", "medium", "low"];
+
+// Statements_Constants
+
+/* const STMT_WELCOME_MESSAGE = `WELCOME TO HASHTAG MANAGER`;
+
+const STMT_MAIN_MENU_OPTIONS = `---X---- Select an option ----X--- 
+1. Generate Hashtags
+2. Add new Hashtag
+3. View all hashtags
+4. Reset Hashtags
+5. Exit`; */
+
+// Validations
+// Handlers
