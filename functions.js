@@ -20,7 +20,7 @@ const generateHashtags = (length = 30, popularityRatio, allHashtags) => {
         mediumCount,
         allHashtags
       ),
-      getRandomHashtagsByPopularity(
+      ...getRandomHashtagsByPopularity(
         constants.POPULARITY_LEVEL[2],
         lowCount,
         allHashtags
