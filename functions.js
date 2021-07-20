@@ -71,32 +71,19 @@ const acceptAndValidateHashtagInputs = (str, popularityLevel) => {
 
 const addHashtag = (str, popularity, allHashtags) => {
   // add it to the current variable in memory & the json file
-  if (allHashtags.popularity) {
-    allHashtags[popularity].push(str);
-  } else {
-    allHashtags[popularity] = [str];
-  }
+  allHashtags[popularity].push(str);
 
   // if hashtag file isn't created then create it out
   if (Object.keys(allHashtags).length === 0) {
     allHashtags = constants.DEFAULT_JSON_DATA;
-    fs.writeFile(
+    fs.writeFileSync(
       constants.DEFAULT_FILE_NAME,
-      JSON.stringify(DEFAULT_JSON_DATA),
-      function (err) {
-        if (err) throw err;
-      }
+      JSON.stringify(DEFAULT_JSON_DATA)
     );
   }
 
-  fs.writeFile(
-    constants.DEFAULT_FILE_NAME,
-    JSON.stringify(allHashtags),
-    function (err) {
-      if (err) throw err;
-      console.log(constants.STMT_HASHTAG_ADDED);
-    }
-  );
+  fs.writeFileSync(constants.DEFAULT_FILE_NAME, JSON.stringify(allHashtags));
+  console.log(constants.STMT_HASHTAG_ADDED);
 };
 
 const viewAllHashtags = allHashtags => {
@@ -104,14 +91,11 @@ const viewAllHashtags = allHashtags => {
 };
 
 const resetHashtags = () => {
-  fs.writeFile(
+  fs.writeFileSync(
     constants.DEFAULT_FILE_NAME,
-    JSON.stringify(constants.DEFAULT_JSON_DATA),
-    function (err) {
-      if (err) throw err;
-      console.log("Deleted!");
-    }
+    JSON.stringify(constants.DEFAULT_JSON_DATA)
   );
+  console.log("Deleted!");
 };
 
 const exitProgram = () => {
